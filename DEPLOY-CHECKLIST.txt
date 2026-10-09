@@ -1,4 +1,4 @@
-BND DM Vault Beta 0.1 — iPhone 部署最短清单
+BND DM Vault Beta 0.2 — iPhone 部署最短清单
 
 1. 解压此 ZIP 到 iPhone“文件”App。
 2. GitHub 新建仓库 bnd-dm-vault。

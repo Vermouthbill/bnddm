@@ -1,4 +1,8 @@
-BND DM Vault — iPhone PWA Beta 0.1
+BND DM Vault Beta 0.3
+
+新增：OCR 待核对内容确认后直接生成成员聊天消息；聊天页为默认阅读层，录屏仅作为核对来源。支持保存自然聊天型中文译文。
+
+BND DM Vault — iPhone PWA Beta 0.2
 SIMULATED CONTENT ONLY
 
 This is the first integrated iPhone test build. It does not connect to Weverse and should not be used with real Weverse DM content yet.

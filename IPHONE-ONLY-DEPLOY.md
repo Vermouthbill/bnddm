@@ -1,4 +1,4 @@
-# BND DM Vault Beta 0.1 — iPhone-only 部署说明
+# BND DM Vault Beta 0.2 — iPhone-only 部署说明
 
 > 这份包只包含应用代码和模拟数据，不包含真实 Weverse DM。
 > 目标：只用 iPhone Safari + GitHub 网页，把 PWA 放到 HTTPS 地址并添加到主屏幕。
