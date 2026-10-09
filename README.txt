@@ -1,4 +1,4 @@
-BND DM Vault · Beta 0.4 (iPhone PWA test build)
+BND DM Vault · Beta 0.6 (iPhone PWA test build)
 
 核心改动
 - 一个聊天气泡 = 一条独立消息，不再按整段录屏归档。
@@ -10,6 +10,9 @@ BND DM Vault · Beta 0.4 (iPhone PWA test build)
 
 重要限制
 - 本版仍只用于模拟聊天测试，不连接 Weverse。
-- 自动气泡边界检测尚未实现；Beta 0.4 先验证正确的数据结构与工作流。
+- 自动气泡边界检测尚未实现；Beta 0.6 先验证正确的数据结构与工作流。
 - Safari 不提供 TextDetector 时不会联网 OCR。
 - JSON 备份保存消息、来源帧和媒体元数据，但不包含视频、图片、语音文件本体。请另外保留原始媒体。
+
+
+Beta 0.6 新增：候选帧自动按蓝色聊天气泡轮廓拆分；每个气泡保留裁切预览和来源区域；相邻气泡自动分为时间组，可一键共用同一分钟；如果浏览器提供 TextDetector，则按气泡裁切区域分别 OCR。图片、语音、礼物气泡以及独立大表情目前仍需人工补充/绑定。
