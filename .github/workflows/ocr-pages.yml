@@ -1,0 +1,56 @@
+
+name: BND Vault Pages + local OCR assets
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: bnd-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Prepare locally hosted OCR runtime
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --prefix /tmp/bndocr --no-audit --no-fund tesseract.js@5.1.1 tesseract.js-core@5.0.0
+          mkdir -p ocr-assets/core ocr-assets/lang
+          cp /tmp/bndocr/node_modules/tesseract.js/dist/tesseract.min.js ocr-assets/tesseract.min.js
+          cp /tmp/bndocr/node_modules/tesseract.js/dist/worker.min.js ocr-assets/worker.min.js
+          cp /tmp/bndocr/node_modules/tesseract.js-core/tesseract-core* ocr-assets/core/
+          curl --fail --location --retry 3 -o ocr-assets/lang/kor.traineddata.gz https://raw.githubusercontent.com/naptha/tessdata/gh-pages/4.0.0/kor.traineddata.gz
+          curl --fail --location --retry 3 -o ocr-assets/lang/eng.traineddata.gz https://raw.githubusercontent.com/naptha/tessdata/gh-pages/4.0.0/eng.traineddata.gz
+          test -s ocr-assets/lang/kor.traineddata.gz
+          test -s ocr-assets/core/tesseract-core.wasm.js
+          touch .nojekyll
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: '.'
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Publish website
+        id: deploy
+        uses: actions/deploy-pages@v4
