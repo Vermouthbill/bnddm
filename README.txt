@@ -1,36 +1,15 @@
-BND DM Vault Beta 0.3
+BND DM Vault · Beta 0.4 (iPhone PWA test build)
 
-新增：OCR 待核对内容确认后直接生成成员聊天消息；聊天页为默认阅读层，录屏仅作为核对来源。支持保存自然聊天型中文译文。
+核心改动
+- 一个聊天气泡 = 一条独立消息，不再按整段录屏归档。
+- 成员显示：成淏/SUNGHO、常赫/RIWOO、宰铉/JAEHYUN、泰山/TAESAN、桐儇/LEEHAN、云鹤/WOONHAK。
+- 支持四种消息类型：文字、图片、语音、礼物气泡。
+- 图片和语音可单独批量导入本机媒体库，再关联到具体气泡。
+- 同一录屏来源帧可以建立多个气泡草稿，每个气泡单独设置发送时间。
+- 聊天页直接阅读消息；原录屏只作为核对来源。
 
-BND DM Vault — iPhone PWA Beta 0.2
-SIMULATED CONTENT ONLY
-
-This is the first integrated iPhone test build. It does not connect to Weverse and should not be used with real Weverse DM content yet.
-
-How to deploy:
-1. Upload ALL files in this folder to the same HTTPS static site folder.
-2. Open index.html through that HTTPS address in iPhone Safari.
-3. Safari -> Share -> Add to Home Screen.
-4. Open the new Home Screen icon and follow the first-run checklist.
-
-Integrated features:
-- Six member chat archives with a WeChat-like chronological view.
-- Date calendar navigation and local full-text search.
-- IndexedDB local storage.
-- Fictional Korean demo messages with manually authored natural-chat Chinese translations.
-- JSON backup/restore for messages and OCR review metadata.
-- Local mock-video storage, frame extraction and keyframe scanning.
-- Persistent OCR review queue and links back to the source video second.
-- Reconstruction hints: probable duplicate, near-duplicate and suspicious time-gap flags.
-- Beta diagnostics page for iPhone Safari capability testing.
-- First-run testing guide.
-
-Important limitations:
-- Browser TextDetector is capability-detected and may be unavailable on iPhone Safari.
-- No Korean OCR model is bundled yet.
-- No online AI translation or translation API is called.
-- Video blobs are NOT included in JSON backups; keep source videos separately.
-- Browser storage must not be treated as the only backup.
-- Use only self-made simulated chat videos until permission for real Weverse DM processing is confirmed.
-
-No analytics are included. The app makes no content-processing network requests. Network access is only needed to load the static PWA files from the site hosting them.
+重要限制
+- 本版仍只用于模拟聊天测试，不连接 Weverse。
+- 自动气泡边界检测尚未实现；Beta 0.4 先验证正确的数据结构与工作流。
+- Safari 不提供 TextDetector 时不会联网 OCR。
+- JSON 备份保存消息、来源帧和媒体元数据，但不包含视频、图片、语音文件本体。请另外保留原始媒体。
