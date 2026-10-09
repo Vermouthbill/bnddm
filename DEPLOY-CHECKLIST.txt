@@ -1,0 +1,11 @@
+BND DM Vault Beta 0.1 — iPhone 部署最短清单
+
+1. 解压此 ZIP 到 iPhone“文件”App。
+2. GitHub 新建仓库 bnd-dm-vault。
+3. 把解压后的所有文件上传到仓库根目录。
+4. Settings → Pages → Deploy from a branch → main → /(root) → Save。
+5. 等 GitHub 给出 HTTPS 地址。
+6. Safari 打开 → 分享 → 添加到主屏幕。
+7. 从桌面 BND Vault 打开 → 跑 Beta 诊断。
+8. 先用模拟数据测试，不导入真实 Weverse DM。
+9. 测试成功后导出一次 JSON 备份。
