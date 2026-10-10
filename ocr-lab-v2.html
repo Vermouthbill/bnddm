@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f8f8fc"><title>BND Vault · 韩文 OCR v0.2 对照测试</title>
+<style>
+:root{color-scheme:light;--ink:#24233a;--muted:#737789;--line:#dee1ec;--purple:#6154cc;--bg:#f7f7fc}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink)}
+header{position:sticky;top:0;z-index:2;background:#fff;border-bottom:1px solid var(--line);padding:16px max(16px,env(safe-area-inset-right))}h1{font-size:21px;margin:0}header p{font-size:12px;color:var(--muted);margin:6px 0 0}
+main{max-width:740px;margin:auto;padding:16px 14px 70px}.panel{background:white;border:1px solid var(--line);border-radius:18px;padding:15px;margin:0 0 13px;box-shadow:0 3px 11px #20203006}.panel h2{font-size:17px;margin:0 0 11px}.hint{font-size:13px;line-height:1.6;color:var(--muted);margin:8px 0}.small{font-size:12px;color:var(--muted)}label{font-size:13px;color:#4d5167;display:block;margin:9px 0 6px}select,input[type=file],input[type=number]{font:inherit;width:100%;border-radius:11px;border:1px solid var(--line);padding:10px;background:#fff;color:var(--ink)}input[type=file]{font-size:13px}button{font:inherit;border:1px solid var(--line);background:white;color:var(--ink);border-radius:11px;padding:11px 13px;cursor:pointer;font-weight:600}button.primary{background:var(--purple);color:white;border-color:var(--purple)}button:disabled{opacity:.45;cursor:not-allowed}.buttons{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.buttons>*{flex:1;min-width:115px}.chip{display:inline-block;padding:3px 7px;border-radius:16px;font-size:11px;background:#f0f0f7;color:#50536b}#status{white-space:pre-wrap;line-height:1.5;font-size:12px;background:#f2f3fa;padding:10px;border-radius:10px;min-height:34px}.hidden{display:none!important}.candidate{border:1px solid var(--line);border-radius:14px;padding:10px;margin:12px 0}.candidate img{width:100%;max-height:170px;object-fit:contain;object-position:left;background:#f7f7fa;border-radius:9px}.candidate textarea{width:100%;border:1px solid var(--line);border-radius:10px;font:14px/1.5 -apple-system,sans-serif;padding:9px;min-height:66px;resize:vertical}.candidate p{font-size:12px;color:var(--muted)}.candidate-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}#preview{max-width:100%;max-height:430px;object-fit:contain;border-radius:11px;background:#fafafd}#rawVideo{width:0;height:0;position:absolute;left:-9999px;opacity:0}footer{font-size:12px;color:var(--muted);line-height:1.65;margin:10px}
+</style>
+</head>
+<body><header><h1>✦ BND DM Vault · OCR Lab v0.2</h1><p>独立测试页 · 本地处理 · 不连接 Weverse · 不自动上传视频或文字</p></header>
+<main>
+<section class="panel"><h2>① 导入前选择成员</h2><select id="member"><option value="SUNGHO">成淏 · SUNGHO</option><option value="RIWOO">常赫 · RIWOO</option><option value="JAEHYUN">宰铉 · JAEHYUN</option><option value="TAESAN">泰山 · TAESAN</option><option value="LEEHAN">桐儇 · LEEHAN</option><option value="WOONHAK">云鹤 · WOONHAK</option></select>
+<p class="hint">目前只用模拟聊天测试。后续如获许可，再评估真实内容导入。整段视频只选一次成员。</p></section>
+<section class="panel"><h2>② 选择测试素材</h2><div class="buttons"><button id="demo" class="primary">生成虚构韩文聊天测试图</button></div><label for="file">或导入自己制作的模拟图片 / MP4 视频</label><input id="file" type="file" accept="image/png,image/jpeg,image/webp,video/mp4,video/quicktime"/>
+<div id="videoOpts" class="hidden"><label>视频取帧间隔（秒，实验上限前 24 秒、最多 8 帧）</label><select id="spacing"><option value="3">3 秒</option><option value="2">2 秒</option><option value="4">4 秒</option></select></div>
+<div class="buttons"><button id="scan" disabled>检测蓝色气泡</button><button id="ocr" disabled class="primary">逐气泡识别韩文</button></div><img id="preview" class="hidden" alt="测试画面预览"/><video id="rawVideo" muted playsinline preload="auto"></video><p id="status" role="status">等待测试素材。模型尚未加载。</p></section>
+<section class="panel"><h2>③ 按气泡检查识别结果 <span id="count" class="chip">0 条</span></h2><p class="hint">v0.2：蓝色区域改用连通分割，裁切仅保留气泡内部，韩语优先识别；文字和时间分离。<strong>这仍然不代表已经自动识别所有类型消息。</strong></p><p class="hint">一个蓝色区域对应一条候选气泡。<strong>录屏第几秒不等于消息发送时间。</strong> 实验不会编造发送时间，也不会自动删除重复内容。识别文字可修改后导出为 JSON 草稿。</p><div id="results"></div><div class="buttons"><button id="export" disabled>导出草稿 JSON（无媒体）</button><button id="clear">清空本次测试</button></div></section>
+<footer>这是独立实验程序，不是完整自动归档 App。Tesseract.js、韩语模型和 WASM 文件由 GitHub Actions 在构建时取得并随本站发布，正常运行时 OCR 在本机执行；首次访问必须联网加载静态资源。iOS 浏览器可能因内存限制中断，建议先用测试图。不要将付费 DM 素材上传到公开 GitHub 仓库。</footer>
+</main>
+<script src="./ocr-assets/tesseract.min.js"></script>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);let kind=null, image=null, fileUrl=null, worker=null, candidates=[], working=false;
+const show=m=>{$('status').textContent=m};const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function reset(){candidates=[];$('results').replaceChildren();$('count').textContent='0 条';$('ocr').disabled=true;$('export').disabled=true}
+function preview(canvas){$('preview').src=canvas.toDataURL('image/jpeg',0.8);$('preview').classList.remove('hidden')}
+function makeCanvas(w,h){const c=document.createElement('canvas');c.width=w;c.height=h;return c}
+function demoCanvas(){const c=makeCanvas(860,1500),ctx=c.getContext('2d');ctx.scale(2,2);ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);ctx.fillStyle='#eeeef4';ctx.fillRect(0,0,430,78);ctx.fillStyle='#1d2030';ctx.font='bold 24px -apple-system';ctx.fillText('가상 대화 · DEMO',22,47);ctx.fillStyle='#868aa0';ctx.font='17px -apple-system';ctx.fillText('2026년 10월 8일',145,111);const items=[['굿모닝 🦊',148,270],['오늘 아침에 몇 번이나 깼어',239,390],['그래도 지금은 괜찮아',349,342],['잘 잤어?',452,225]];for(const [t,y,w] of items){ctx.fillStyle='#b9f3f5';ctx.beginPath();ctx.roundRect(25,y,w,65,18);ctx.fill();ctx.fillStyle='#111';ctx.font='21px -apple-system';ctx.fillText(t,40,y+41)}ctx.fillStyle='#888';ctx.font='17px -apple-system';ctx.fillText('07:53',318,207);ctx.fillText('07:54',324,300);ctx.fillText('07:55',355,415);ctx.fillText('07:56',260,504);ctx.fillStyle='#9ca2b3';ctx.font='14px -apple-system';ctx.fillText('此图是程序生成的虚构聊天，不是 Weverse 内容',18,708);return c}
+$('demo').onclick=()=>{if(working)return;releaseFile();reset();image=demoCanvas();kind='image';preview(image);$('scan').disabled=false;$('videoOpts').classList.add('hidden');show('已生成高清虚构聊天图。请依次检测气泡，再执行韩文 OCR。')};
+function releaseFile(){if(fileUrl){URL.revokeObjectURL(fileUrl);fileUrl=null}$('rawVideo').removeAttribute('src');$('rawVideo').load()}
+$('file').addEventListener('change',async()=>{if(working)return;const f=$('file').files?.[0];if(!f)return;releaseFile();reset();const mime=f.type||'', isVideo=mime.startsWith('video/')||/\.(mp4|mov)$/i.test(f.name);if(!isVideo && !mime.startsWith('image/')){show('仅支持图片或 MP4/MOV 视频');return}if(f.size>150*1024*1024){show('测试文件暂限 150 MB；请改用较短的模拟视频。');return}fileUrl=URL.createObjectURL(f);kind=isVideo?'video':'image';image=null;$('videoOpts').classList.toggle('hidden',!isVideo);try{if(isVideo){const v=$('rawVideo');v.src=fileUrl;await new Promise((resolve,reject)=>{v.onloadedmetadata=resolve;v.onerror=()=>reject(new Error('Safari 无法解码这个视频'))});show('视频已加载：'+v.duration.toFixed(1)+' 秒。将只取前 24 秒的少量帧测试。');$('preview').classList.add('hidden')}else{const im=new Image;im.src=fileUrl;await im.decode();const ratio=Math.min(1,1920/Math.max(im.width,im.height),Math.sqrt(2500000/(im.width*im.height))),c=makeCanvas(Math.round(im.width*ratio),Math.round(im.height*ratio));c.getContext('2d').drawImage(im,0,0,c.width,c.height);image=c;preview(c);show('图片已加载，准备检测蓝色气泡。')} $('scan').disabled=false}catch(e){show('无法读取素材：'+e.message);$('scan').disabled=true}});
+async function seekVideo(v,time){if(!Number.isFinite(v.duration))throw Error('视频没有有效时长');if(Math.abs(v.currentTime-time)<0.05){await wait(80);return}await new Promise((resolve,reject)=>{const timer=setTimeout(()=>{v.removeEventListener('seeked',ok);reject(new Error('视频跳转超时'))},8000);const ok=()=>{clearTimeout(timer);resolve()};v.addEventListener('seeked',ok,{once:true});v.currentTime=Math.max(0,Math.min(time,Math.max(0,v.duration-0.1)))})}
+function frameFromVideo(v){let sc=Math.min(1,1920/Math.max(v.videoWidth,v.videoHeight),Math.sqrt(2500000/(v.videoWidth*v.videoHeight)));const canvas=makeCanvas(Math.max(1,Math.round(v.videoWidth*sc)),Math.max(1,Math.round(v.videoHeight*sc)));canvas.getContext('2d',{willReadFrequently:true}).drawImage(v,0,0,canvas.width,canvas.height);return canvas}
+// Per-component cyan segmentation. Time labels outside cyan are NEVER copied into a text crop.
+function isCyan(r,g,b){return r>105&&r<240&&g>166&&b>174&&(g-r)>9&&(b-r)>10&&Math.abs(b-g)<70}
+function detectCyan(src,t){
+  const w=src.width,h=src.height,ctx=src.getContext('2d',{willReadFrequently:true});
+  const pixels=ctx.getImageData(0,0,w,h).data, step=2,gw=Math.ceil(w/step),gh=Math.ceil(h/step);
+  const mask=new Uint8Array(gw*gh),seen=new Uint8Array(gw*gh),q=new Int32Array(gw*gh);
+  for(let gy=0;gy<gh;gy++)for(let gx=Math.ceil(w*.07/step);gx<Math.floor(w*.94/step);gx++){
+    const x=gx*step,y=gy*step,i=(y*w+x)*4;
+    if(isCyan(pixels[i],pixels[i+1],pixels[i+2]))mask[gy*gw+gx]=1;
+  }
+  const comps=[];
+  for(let k=0;k<mask.length;k++){
+    if(!mask[k]||seen[k])continue;
+    let head=0,tail=1,area=0,left=gw,right=0,top=gh,bottom=0;
+    q[0]=k;seen[k]=1;
+    while(head<tail){
+      const cur=q[head++],x=cur%gw,y=(cur-x)/gw;area++;
+      if(x<left)left=x;if(x>right)right=x;if(y<top)top=y;if(y>bottom)bottom=y;
+      const ns=[x>0?cur-1:-1,x+1<gw?cur+1:-1,y>0?cur-gw:-1,y+1<gh?cur+gw:-1];
+      for(const n of ns){if(n>=0&&mask[n]&&!seen[n]){seen[n]=1;q[tail++]=n}}
+    }
+    const bw=(right-left+1)*step,bh=(bottom-top+1)*step;
+    if(area<80||bw<w*.10||bh<18||bh>h*.22)continue;
+    const coverage=area/((right-left+1)*(bottom-top+1));
+    if(coverage<.30)continue;
+    comps.push({left:left*step,right:Math.min(w,(right+1)*step),top:top*step,bottom:Math.min(h,(bottom+1)*step),area});
+  }
+  comps.sort((a,b)=>a.top-b.top||a.left-b.left);
+  return comps.slice(0,24).map(b=>{
+    // Avoid copying adjacent gray clock labels (and therefore inventing time as message text).
+    const insetX=Math.min(7,Math.floor((b.right-b.left)*.025));
+    const insetY=Math.min(5,Math.floor((b.bottom-b.top)*.08));
+    const x=Math.max(0,b.left+insetX),y=Math.max(0,b.top+insetY);
+    const cw=Math.max(1,b.right-b.left-2*insetX),ch=Math.max(1,b.bottom-b.top-2*insetY);
+    const crop=makeCanvas(cw,ch);
+    crop.getContext('2d').drawImage(src,x,y,cw,ch,0,0,cw,ch);
+    return {member:$('member').value,sourceSeconds:t,position:{x:x/w,y:y/h,width:cw/w,height:ch/h},crop:crop.toDataURL('image/png'),canvas:crop,text:'',confidence:null,messageTime:null,needsReview:true,ocrNotice:'未执行'};
+  });
+}
+$('scan').onclick=async()=>{if(working)return;working=true;$('scan').disabled=true;$('ocr').disabled=true;reset();try{if(kind==='image'){candidates=detectCyan(image,null)}else if(kind==='video'){const v=$('rawVideo');if(!v.videoWidth)throw Error('视频元信息未加载');const step=Number($('spacing').value),duration=Math.min(24,v.duration-0.1),times=[];for(let s=0; s<=duration&&times.length<8;s+=step)times.push(s);for(let i=0;i<times.length;i++){show(`抽取第 ${i+1}/${times.length} 帧（视频 ${times[i]} 秒）……`);await seekVideo(v,times[i]);const frame=frameFromVideo(v);if(i===0)preview(frame);candidates.push(...detectCyan(frame,times[i]));await wait(20)}}render();show(`已检测 ${candidates.length} 个疑似蓝色气泡区域。这不等于成功识别文字或全部消息；相邻视频帧可能重复。`);$('ocr').disabled=candidates.length===0;$('export').disabled=candidates.length===0}catch(e){show('气泡检测失败：'+String(e.message||e))}finally{working=false;$('scan').disabled=false}};
+function render(){const root=$('results');root.replaceChildren();$('count').textContent=candidates.length+' 个候选';candidates.forEach((c,i)=>{const box=document.createElement('article');box.className='candidate';const head=document.createElement('div');head.className='candidate-head';const lab=document.createElement('strong');lab.textContent='气泡候选 '+(i+1);const tag=document.createElement('span');tag.className='chip';tag.textContent=c.sourceSeconds===null?'来源：测试图片':`来源视频 ${c.sourceSeconds} 秒`;head.append(lab,tag);const img=document.createElement('img');img.src=c.crop;img.alt='气泡内部裁切预览，已排除外部时间标签';const desc=document.createElement('p');desc.textContent='消息发送时间：未知 · '+(c.confidence===null?'OCR 未执行':`OCR 置信分数 ${Math.round(c.confidence)}（不等于准确率）· ${c.ocrNotice||'待检查'}`);const txt=document.createElement('textarea');txt.placeholder='OCR 结果将在这里显示，可人工修正';txt.value=c.text;txt.addEventListener('input',()=>{c.text=txt.value});box.append(head,img,desc,txt);root.append(box)})}
+async function initOCR(){
+  if(worker) return worker;
+  if(typeof Tesseract==='undefined') throw Error('未找到本地 OCR 脚本。请先运行 GitHub Actions 部署。');
+  show('正在初始化本地韩文 OCR 模型，首次加载可能较慢……');
+  worker=await Tesseract.createWorker('kor',1,{
+    workerPath:new URL('./ocr-assets/worker.min.js',location.href).href,
+    corePath:new URL('./ocr-assets/core/',location.href).href,
+    langPath:new URL('./ocr-assets/lang',location.href).href,
+    workerBlobURL:false,
+    logger:m=>{
+      if(m?.status){
+        const progress=m.progress!==undefined?Math.round(m.progress*100)+'%':'';
+        show('OCR 初始化/进度：'+m.status+' '+progress);
+      }
+    }
+  });
+  return worker;
+}
+// OCR preprocessing is bounded in size to avoid iPhone out-of-memory errors.
+function prepareOCR(original,variant='base'){
+  const factor=Math.min(3,Math.max(1,Math.floor(1350/original.width)));
+  const scaled=makeCanvas(original.width*factor,original.height*factor),ctx=scaled.getContext('2d',{willReadFrequently:true});
+  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';ctx.fillStyle='#fff';ctx.fillRect(0,0,scaled.width,scaled.height);
+  ctx.drawImage(original,0,0,scaled.width,scaled.height);
+  const im=ctx.getImageData(0,0,scaled.width,scaled.height),a=im.data;
+  for(let i=0;i<a.length;i+=4){
+    const gray=.299*a[i]+.587*a[i+1]+.114*a[i+2];
+    let v=variant==='threshold'?(gray<170?0:255):Math.max(0,Math.min(255,(gray-65)*1.38));
+    a[i]=a[i+1]=a[i+2]=v;a[i+3]=255;
+  }
+  ctx.putImageData(im,0,0);return scaled;
+}
+function scoreText(result){
+  const str=(result.data.text||'').trim(),hangul=(str.match(/[가-힣]/g)||[]).length;
+  const alnum=(str.match(/[\p{L}\p{N}]/gu)||[]).length;
+  const digits=(str.match(/[0-9]/g)||[]).length;
+  const confidence=Number(result.data.confidence)||0;
+  // A confidence score is only a ranking hint; never equate it with correctness.
+  return (hangul?15:0)+confidence*.40+(alnum?hangul/alnum*25:0)-digits*2;
+}
+async function recognizeCandidate(w,c){
+  const likelyMulti=c.canvas.height>96&&c.canvas.height>c.canvas.width*.32;
+  await w.setParameters({tessedit_pageseg_mode:likelyMulti?6:7,preserve_interword_spaces:'1'});
+  const first=await w.recognize(prepareOCR(c.canvas,'base'));
+  let chosen=first;
+  if(scoreText(first)<52){
+    const second=await w.recognize(prepareOCR(c.canvas,'threshold'));
+    if(scoreText(second)>scoreText(first))chosen=second;
+  }
+  c.text=(chosen.data.text||'').trim();c.confidence=chosen.data.confidence;
+  c.ocrNotice=(!c.text||!/[가-힣]/.test(c.text))?'韩文未可靠识别':
+    (/\b\d{1,2}:\d{2}\b/.test(c.text)?'检测到疑似时间混入，请核对':
+    (Number(c.confidence)<80?'低可靠性，必须核对':'仍需核对'));
+  c.needsReview=true;
+}
+$('ocr').onclick=async()=>{if(working)return;working=true;$('ocr').disabled=true;try{
+  const w=await initOCR(),count=Math.min(candidates.length,18);
+  for(let i=0;i<count;i++){
+    show(`韩语优先识别 ${i+1}/${count}；低置信度会自动尝试高对比预处理……`);
+    const c=candidates[i];await recognizeCandidate(w,c);render();await wait(25);
+  }
+  show(`已尝试识别 ${count} 个候选。结果只是草稿，不会自动归档；气泡外的发送时间尚未识别。独立 Emoji/图片/语音仍不在此检测范围。`);
+}catch(e){show('OCR 失败：'+String(e.message||e)+'。请检查模型加载与浏览器错误信息。')}finally{working=false;$('ocr').disabled=false}};
+$('export').onclick=()=>{const data={format:'BND_OCR_LAB_DRAFT_2',createdAt:new Date().toISOString(),member:$('member').value,disclaimer:'Experimental OCR candidates, not confirmed messages or chat archive',candidates:candidates.map(c=>({member:c.member,sourceSeconds:c.sourceSeconds,position:c.position,originalText:c.text,confidence:c.confidence,ocrNotice:c.ocrNotice,messageTime:c.messageTime,needsReview:true}))};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='bnd-ocr-lab-draft.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)};
+$('clear').onclick=()=>{reset();image=null;kind=null;releaseFile();$('preview').classList.add('hidden');$('file').value='';$('scan').disabled=true;show('本次测试已清空。')};
+</script>
+</body></html>
